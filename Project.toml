@@ -1,0 +1,8 @@
+name = "GanttChart"
+uuid = "4c47f252-fb2d-4e1f-93d3-7a5e1f542d88"
+authors = ["Anand Ray <a2ray@ucsd.edu>"]
+version = "0.1.0"
+
+[deps]
+Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
+PyPlot = "d330b81b-6aea-500a-939a-2ce795aea3ee"
