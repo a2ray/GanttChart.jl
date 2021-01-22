@@ -39,8 +39,7 @@ function Gantt(;
       end
       println("here")
       timereq = convert.(Dates.Day, timereq*dt)
-      completed = convert.(Dates.Day, round(completefrac.*timereq))
-      Gantt(tasknames, startdate, dt, timereq, completed)
+      Gantt(tasknames, startdate, dt, timereq, Dates.Day.(round.(Int, completefrac.*Dates.value.(timereq))))
 end
 
 function Gantt(g::Gantt; figsize=(8,4))
