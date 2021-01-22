@@ -2,5 +2,6 @@
 ## Installation
 To install, use Julia's `Pkg` REPL:
 ```
-pkg> add https://github.com/a2ray/GanttChart.jl
+julia> using Pkg
+julia> Pkg.add(url="https://github.com/a2ray/GanttChart.jl")
 ```
