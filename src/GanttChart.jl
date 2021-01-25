@@ -24,7 +24,7 @@ function Gantt(;
       @assert length(tasknames) == length(startdate)
       @assert length(tasknames) == length(timereq)
       @assert length(tasknames) == length(completefrac)
-      @assert all(0 .<completefrac .<1)
+      @assert all(0 .<=completefrac .<=1)
 
       if timeunits == "Day"
           dt = Day(1)
@@ -37,12 +37,11 @@ function Gantt(;
       else
           @assert 1 == 0 "invalid time, so stopping"
       end
-      println("here")
       timereq = convert.(Dates.Day, timereq*dt)
       Gantt(tasknames, startdate, dt, timereq, Dates.Day.(round.(Int, completefrac.*Dates.value.(timereq))))
 end
 
-function Gantt(g::Gantt; figsize=(8,4))
+function Gantt(g::Gantt; figsize=(20,4))
     f, ax = plt.subplots(figsize=figsize)
     datemin, datemax = extrema(reduce(vcat, cumsum([g.startdate, g.timereq])))
     ax.barh(1:length(g.tasknames), sum([g.startdate, g.timereq]), color="red", label="remaining")
@@ -52,8 +51,14 @@ function Gantt(g::Gantt; figsize=(8,4))
     ax.set_yticks(1:length(g.tasknames))
     ax.set_yticklabels(g.tasknames)
     majorformatter = matplotlib.dates.DateFormatter("%m.%Y")
+    minorformatter = matplotlib.dates.DateFormatter("%M")
+    minorlocator = matplotlib.dates.MonthLocator(interval=1)
     ax.xaxis.set_major_formatter(majorformatter)
-    ax.grid(axis="x")
+    ax.xaxis.set_minor_locator(minorlocator)
+    ax.xaxis.set_minor_locator(minorlocator)
+    ax.grid()
+    ax.plot([Dates.now(), Dates.now()], [0, length(g.tasknames)+1], "--k")
+    ax.set_ylim(0, length(g.tasknames)+1)
     ax.invert_yaxis()
     ax.legend()
     f.tight_layout()
