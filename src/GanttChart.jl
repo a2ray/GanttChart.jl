@@ -10,6 +10,7 @@ mutable struct Gantt
     timeunits
     timereq
     completed
+    people
 end
 
 function Gantt(;
@@ -18,12 +19,14 @@ function Gantt(;
                               Dates.today() + Dates.Month(1)],
                timeunits    = "Month",
                timereq      = [2.5, 1],
-               completefrac = [0.5, 0.2]
+               completefrac = [0.5, 0.2],
+               people       = ["me, you", "she, they"]
               )
 
       @assert length(tasknames) == length(startdate)
       @assert length(tasknames) == length(timereq)
       @assert length(tasknames) == length(completefrac)
+      @assert length(tasknames) == length(people)
       @assert all(0 .<=completefrac .<=1)
 
       if timeunits == "Day"
@@ -38,15 +41,16 @@ function Gantt(;
           @assert 1 == 0 "invalid time, so stopping"
       end
       timereq = convert.(Dates.Day, timereq*dt)
-      Gantt(tasknames, startdate, dt, timereq, Dates.Day.(round.(Int, completefrac.*Dates.value.(timereq))))
+      Gantt(tasknames, startdate, dt, timereq, Dates.Day.(round.(Int, completefrac.*Dates.value.(timereq))), people)
 end
 
 function Gantt(g::Gantt; figsize=(20,4))
     f, ax = plt.subplots(figsize=figsize)
     datemin, datemax = extrema(reduce(vcat, cumsum([g.startdate, g.timereq])))
-    ax.barh(1:length(g.tasknames), sum([g.startdate, g.timereq]), color="red", label="remaining")
-    ax.barh(1:length(g.tasknames), sum([g.startdate, g.completed]), color="green", label="completed")
+    ax.barh(1:length(g.tasknames), sum([g.startdate, g.timereq]), color="salmon", label="remaining")
+    ax.barh(1:length(g.tasknames), sum([g.startdate, g.completed]), color="limegreen", label="completed")
     ax.barh(1:length(g.tasknames), g.startdate, color="white")
+    [ax.annotate(g.people[i], xy=[g.startdate[i],i], color="blue") for i in 1:length(g.startdate)]
     ax.set_xlim(datemin, datemax)
     ax.set_yticks(1:length(g.tasknames))
     ax.set_yticklabels(g.tasknames)
